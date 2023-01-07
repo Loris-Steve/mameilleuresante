@@ -16,29 +16,38 @@ function SearchForm(props: any) {
   const [listElement, setListElement] = useState<any[]>([]);
 
   const [query, setQuery] = useState<QueryModel>(
-    { id: undefined, resultType: ResultType.INGREDIENT, name: '' });
+    {
+      lastIngredientId: undefined,
+      lastRecipId: undefined,
+      lastSicknessId: undefined,
+      resultType: ResultType.INGREDIENT, name: ''
+    });
   const history = useHistory();
 
   const accountTypeRef = React.createRef<HTMLButtonElement>();
   const critereListRef = React.createRef<HTMLInputElement>();
 
   const setResultType = (resultType: ResultType) => {
-    //props.props.history.push('/'+resultType.toLowerCase())
-    //props.props.history.push("/recette");
+    let id: Number | '';
+    console.log('Avant query :>> ', query);
     switch (resultType) {
       case ResultType.INGREDIENT:
         setListElement(listToAutocompleteItemList(resultType, ingredientList));
+        id = query.lastIngredientId !== undefined ? query.lastIngredientId : '';
         break;
       case ResultType.RECETTE:
         setListElement(listToAutocompleteItemList(resultType, recipeList));
+        id = query.lastRecipId !== undefined ? query.lastRecipId : '';
         break;
       case ResultType.MALADIE:
         setListElement(listToAutocompleteItemList(resultType, sicknessList));
-        break
+        id = query.lastSicknessId !== undefined ? query.lastSicknessId : '';
+        break;
     }
 
-    setQuery({ ...query, resultType })
-    history.push('/'+resultType.toLowerCase())
+    console.log('identifiant :>> ', id);
+    setQuery({ ...query, resultType, name: '' })
+    history.push('/' + resultType.toLowerCase() + '/' + id)
 
   }
   // return true if string contain other string
@@ -52,14 +61,14 @@ function SearchForm(props: any) {
     let newList: AutocompleteItem[];
     switch (resultType) {
       case ResultType.INGREDIENT:
-        newList = listEl.map((ing,pos) => { return { code: "ingredientName", value: ing.ingredientName, data: pos } });
+        newList = listEl.map((ing, pos) => { return { code: "ingredientName", value: ing.ingredientName, data: { id: pos, text: ing.ingredientName } } });
         break;
       case ResultType.RECETTE:
-        newList = listEl.map((recip,pos) => { return { code: "recipeName", value: recip.recipeName, data: pos } });
+        newList = listEl.map((recip, pos) => { return { code: "recipeName", value: recip.recipeName, data: { id: pos, text: recip.recipeName } } });
         break;
       case ResultType.MALADIE:
         //console.log(ResultType.MALADIE, 'list :>> ', listEl);
-        newList = listEl.map((sick,pos) => { return { code: "sicknessName", value: sick.sicknessName, data: pos } });
+        newList = listEl.map((sick, pos) => { return { code: "sicknessName", value: sick.sicknessName, data: { id: pos, text: sick.sicknessName } } });
         break;
       default:
         newList = [];
@@ -75,39 +84,52 @@ function SearchForm(props: any) {
     return items.filter(it => compareString(it.value, value));
   }
 
-  const changeElementSearch = (id: number) => {
-    //searchInAutocompleteList(value, listElement);
+  const changeElementSearch = (data: any) => {
+    console.log("ENTER");
+    const { id, text } = data;
+    const newQuery = { ...query };
+    switch (newQuery.resultType) {
+      case ResultType.INGREDIENT:
+        newQuery.lastIngredientId = id;
+        break;
+      case ResultType.RECETTE:
+        newQuery.lastRecipId = id;
+        break;
+      case ResultType.MALADIE:
+        newQuery.lastSicknessId = id;
+        break;
+    }
 
-    setQuery({ ...query, id})
-    //console.log('id :>> ', id);
-    history.push('/'+query.resultType.toLowerCase()+'/' + id)
+    newQuery.name = text;
+    setQuery({ ...newQuery });
+
+    console.log('newQuery :>> ', newQuery);
+    history.push('/' + query.resultType.toLowerCase() + '/' + id)
 
   }
 
 
   const search = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    console.log("search");
-    if (query.id) {
-
-      if (query.name) {
-
+    console.log("search", query);
+    if (query.name) {
+      const firstElementList: AutocompleteItem = searchInAutocompleteList(query.name, listElement)[0];
+      if (firstElementList) {
+        setQuery({ ...query, name: firstElementList?.data?.text })
+        history.push('/' + query.resultType.toLowerCase() + '/' + firstElementList?.data?.id);
       }
       else {
-        alert("Le nom ne doit pas être null")
-      }
 
-      history.push('/'+query.resultType.toLowerCase()+'/' + query.id);
+      }
     }
     else {
-      alert("Aucun élément renseigné")
+      alert("Le nom ne doit pas être null")
     }
-
   }
 
   useEffect(() => {
     setResultType(query.resultType);
-  },[])
+  }, [])
 
   return (
     <div className='container p-4 d-md-flex justify-content-center '>
@@ -144,7 +166,7 @@ function SearchForm(props: any) {
               tabIndex: 2,
               show: true,
               items: !query.name ? listElement : searchInAutocompleteList(query.name, listElement),
-              selectItem: (id: number) => changeElementSearch(id)
+              selectItem: (data: any) => changeElementSearch(data)
             }}
           />
         </div>

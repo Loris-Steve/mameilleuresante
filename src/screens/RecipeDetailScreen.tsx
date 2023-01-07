@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { recipeList } from '../app/recipeList';
 import SearchForm from '../components/SearchForm';
 import { ApiCall } from '../models/ApiCall';
 import { RecipeModel } from '../models/RecipeModel';
 
+
 function RecipeDetailScreen(props: any) {
   const [recipe, setRecipe] = useState<RecipeModel>();
+  const [tabs, setTabs] = useState<1 | 2>(1); // pour afficher les maladie associé ou les ingrédients
+
   const [state, setState] = useState<ApiCall>({
     results: [],
     loading: false,
@@ -21,12 +24,12 @@ function RecipeDetailScreen(props: any) {
 
   }
   useEffect(() => {
-    console.log("object ingredient", params.id);
+    //console.log("object ingredient", params.id);
     if (params.id) {
 
       const position: number = params.id;
       const rec = recipeList[position];
-      console.log('ing :>> ', rec);
+      //console.log('ing :>> ', rec);
       setRecipe(rec);
       search(rec?.recipeName);
     }
@@ -34,7 +37,8 @@ function RecipeDetailScreen(props: any) {
   }, [params])
 
   return (
-        <div className='text-center'>      <div className='container text-center pb-2'>
+    <div className='text-center'>
+      <div className='container text-center pb-2'>
 
         <h1>Recette</h1>
       </div>
@@ -72,8 +76,35 @@ function RecipeDetailScreen(props: any) {
 
                 </div>
 
-                <div className='col-sm-6 col-12  border rounded'>
+                <div className='col-sm-6 col-12  border rounded p-0'>
+                  <div className='d-flex'>
+                    <button className={'col-6 '+( tabs !== 1 ? "btn btn-light border-right border-bottom" : "btn")}
+                    onClick={() => setTabs(1)}
+                    >
+                     Maladie
+                    </button>
 
+                    <button className={'col-6 '+( tabs !== 2 ? "btn btn-light border-left border-bottom" : "btn")}
+                    onClick={() => setTabs(2)}
+                    >
+                      Ingredient
+                    </button>
+                  </div>
+
+                  <div className=''>
+                    {tabs === 1 ?
+                        recipe.sickness.map((ing,pos) =>
+                        <Link key={"sick"+pos} to={'/maladie/'+pos} className='btn btn-white col-12 border-bottom p-3'>
+                          {ing.sicknessName}
+                        </Link>
+                        ) :
+                    recipe.ingredients.map((ing,pos) =>
+                      <Link key={"ing"+pos} to={'/ingredient/'+pos}  className='btn btn-white col-12 border-bottom p-3'>
+                        {ing.ingredientName}
+                      </Link>
+                      ) 
+                    }
+                  </div>
                 </div >
 
               </div>

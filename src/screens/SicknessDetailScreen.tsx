@@ -23,14 +23,14 @@ function SicknessDetailScreen(props: any) {
     }
 
     useEffect(() => {
-        console.log("object sickness", params.id);
+        //console.log("object sickness", params.id);
         // Si l'id de la maladie existe dans l'url 
         if (params.id) {
             // On récupère l'id qui correspond à sa position dans la liste "sicknessList"
             const position: number = params.id;
             // on récupère les informations de la maladie
             const rec = sicknessList[position];
-            console.log('ing :>> ', rec);
+            //console.log('ing :>> ', rec);
             // On met à jour la maladie courant pour que les données s'affiche
             setSickness(rec);
             // on lui dit qu'une recherche vient d'être faite (si fonctionne pas msg = "Aucune maladie trouvé" et plus "Vous pouvez rec...")
