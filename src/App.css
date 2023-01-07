@@ -37,3 +37,13 @@
     transform: translateY(0px);
   }
 }
+
+
+/* ********* */
+#webSiteContent {
+  min-height: 70vh;
+}
+
+.bg-form {
+  background-color: rgb(250, 250, 250);
+}
