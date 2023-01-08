@@ -46,7 +46,7 @@ function IngredientDetailScreen(props: any) {
         }
     }, [params])
 
-    const endpointUrl = 'https://dbpedia.org/sparql';
+/*     const endpointUrl = 'https://dbpedia.org/sparql';
 
     const sparqlQuery = `PREFIX dbp:<http://dbpedia.org/property/>
         PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
@@ -77,11 +77,7 @@ function IngredientDetailScreen(props: any) {
         //console.log('data_aw :>> ', data_aw);
 
     }
-
-    useEffect(() => {
-        searchPlant()
-    }
-        , []);
+ */
 
     return (
         <div className='text-center'>

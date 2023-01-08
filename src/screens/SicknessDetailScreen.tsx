@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { ReactReduxContext } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { remedyList } from '../app/remedyList';
 import { sicknessList } from '../app/sicknessList';
