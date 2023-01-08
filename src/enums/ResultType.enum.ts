@@ -1,5 +1,5 @@
 export enum ResultType {
   INGREDIENT = "INGREDIENT",
-  RECETTE = "RECETTE",
+  REMEDE = "REMEDE",
   MALADIE = "MALADIE" ,
 }

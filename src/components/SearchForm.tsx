@@ -7,12 +7,12 @@ import './autocomplete.scss'
 import { useHistory } from 'react-router-dom';
 import { ingredientList } from '../app/ingredientList';
 import { AutocompleteItem } from '../models/Autocomplete';
-import { recipeList } from '../app/recipeList';
+import { remedyList } from '../app/remedyList';
 import { sicknessList } from '../app/sicknessList';
 
 
 function SearchForm(props: any) {
-  //const [resultType, setResultType] = useState<ResultType>(ResultType.INGREDIENT);
+
   const [listElement, setListElement] = useState<any[]>([]);
 
   const [query, setQuery] = useState<QueryModel>(
@@ -29,14 +29,14 @@ function SearchForm(props: any) {
 
   const setResultType = (resultType: ResultType) => {
     let id: Number | '';
-    console.log('Avant query :>> ', query);
+
     switch (resultType) {
       case ResultType.INGREDIENT:
         setListElement(listToAutocompleteItemList(resultType, ingredientList));
         id = query.lastIngredientId !== undefined ? query.lastIngredientId : '';
         break;
-      case ResultType.RECETTE:
-        setListElement(listToAutocompleteItemList(resultType, recipeList));
+      case ResultType.REMEDE:
+        setListElement(listToAutocompleteItemList(resultType, remedyList));
         id = query.lastRecipId !== undefined ? query.lastRecipId : '';
         break;
       case ResultType.MALADIE:
@@ -45,11 +45,11 @@ function SearchForm(props: any) {
         break;
     }
 
-    console.log('identifiant :>> ', id);
     setQuery({ ...query, resultType, name: '' })
     history.push('/' + resultType.toLowerCase() + '/' + id)
 
   }
+
   // return true if string contain other string
   const compareString = (text: string, text2: string): boolean => {
     if (text.length && text2.length)
@@ -63,19 +63,16 @@ function SearchForm(props: any) {
       case ResultType.INGREDIENT:
         newList = listEl.map((ing, pos) => { return { code: "ingredientName", value: ing.ingredientName, data: { id: pos, text: ing.ingredientName } } });
         break;
-      case ResultType.RECETTE:
-        newList = listEl.map((recip, pos) => { return { code: "recipeName", value: recip.recipeName, data: { id: pos, text: recip.recipeName } } });
+      case ResultType.REMEDE:
+        newList = listEl.map((recip, pos) => { return { code: "remedyName", value: recip.remedyName, data: { id: pos, text: recip.remedyName } } });
         break;
       case ResultType.MALADIE:
-        //console.log(ResultType.MALADIE, 'list :>> ', listEl);
         newList = listEl.map((sick, pos) => { return { code: "sicknessName", value: sick.sicknessName, data: { id: pos, text: sick.sicknessName } } });
         break;
       default:
         newList = [];
         break;
     }
-
-    //console.log(resultType, 'list :>> ', newList);
 
     return newList;
   }
@@ -85,14 +82,14 @@ function SearchForm(props: any) {
   }
 
   const changeElementSearch = (data: any) => {
-    console.log("ENTER");
+
     const { id, text } = data;
     const newQuery = { ...query };
     switch (newQuery.resultType) {
       case ResultType.INGREDIENT:
         newQuery.lastIngredientId = id;
         break;
-      case ResultType.RECETTE:
+      case ResultType.REMEDE:
         newQuery.lastRecipId = id;
         break;
       case ResultType.MALADIE:
@@ -103,7 +100,6 @@ function SearchForm(props: any) {
     newQuery.name = text;
     setQuery({ ...newQuery });
 
-    console.log('newQuery :>> ', newQuery);
     history.push('/' + query.resultType.toLowerCase() + '/' + id)
 
   }
@@ -111,7 +107,7 @@ function SearchForm(props: any) {
 
   const search = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    console.log("search", query);
+
     if (query.name) {
       const firstElementList: AutocompleteItem = searchInAutocompleteList(query.name, listElement)[0];
       if (firstElementList) {
@@ -119,7 +115,6 @@ function SearchForm(props: any) {
         history.push('/' + query.resultType.toLowerCase() + '/' + firstElementList?.data?.id);
       }
       else {
-
       }
     }
     else {

@@ -1,15 +1,14 @@
-import { useState, useEffect, SetStateAction } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ingredientList } from '../app/ingredientList';
-import { recipeList } from '../app/recipeList';
+import { remedyList } from '../app/remedyList';
 import { ApiCall } from '../models/ApiCall';
 import { IngredientModel } from '../models/IngredientModel';
-import { RecipeModel } from '../models/RecipeModel';
-//import { SparqlClient } from 'sparql-connect';
+import { RemedyModel } from '../models/RemedyModel';
 
 function IngredientDetailScreen(props: any) {
-    const [ingredient, setRecipe] = useState<IngredientModel>();
-    const [recipes, setReceipes] = useState<RecipeModel[]>([]);
+    const [ingredient, setRemedy] = useState<IngredientModel>();
+    const [remedys, setReceipes] = useState<RemedyModel[]>([]);
 
     const [state, setState] = useState<ApiCall>({
         results: [],
@@ -18,16 +17,16 @@ function IngredientDetailScreen(props: any) {
         searched: false
     });
     const params: any = useParams();
-    
-    const ingredientExist = (ingredients : IngredientModel[], ingredienName : string): boolean => {
-        return ingredients.find(ing => 
+
+    const ingredientExist = (ingredients: IngredientModel[], ingredienName: string): boolean => {
+        return ingredients.find(ing =>
             ing.ingredientName.toLowerCase().
-            includes(ingredienName.toLowerCase()) ) ? true : false;
+                includes(ingredienName.toLowerCase())) ? true : false;
 
     }
-    
-    const getRecipIngredient = (ingr:string) => {
-        setReceipes(recipeList.filter(recip => ingredientExist(recip.ingredients, ingr)));
+
+    const getRecipIngredient = (ingr: string) => {
+        setReceipes(remedyList.filter(recip => ingredientExist(recip.ingredients, ingr)));
     }
 
     const search = (params: any) => {
@@ -35,93 +34,54 @@ function IngredientDetailScreen(props: any) {
 
     }
     useEffect(() => {
-        //console.log("object ingredient", params.id);
+
         if (params.id) {
 
             const position: number = params.id;
             const rec = ingredientList[position];
-            //console.log('ing :>> ', rec);
-            getRecipIngredient(rec.ingredientName);
-            setRecipe(rec);
+
+            getRecipIngredient(rec.ingredientName); // jointure
+            setRemedy(rec);
             search(rec?.ingredientName);
         }
     }, [params])
-    //const [data, setData] = useState<any>(null);
 
-    // useEffect(() => {
-    //   const endpointUrl = 'https://query.wikidata.org/sparql';
-    //   const client = new SparqlClient(endpointUrl);
+    const endpointUrl = 'https://dbpedia.org/sparql';
 
-    //   const query = 
-    //     `SELECT DISTINCT ?country ?countryLabel ?capital ?capitalLabel
-    //     WHERE
-    //     {
-    //       ?country wdt:P31 wd:Q3624078 .
-    //       #not a former country
-    //       FILTER NOT EXISTS {?country wdt:P31 wd:Q3024240}
-    //       #and no an ancient civilisation (needed to exclude ancient Egypt)
-    //       FILTER NOT EXISTS {?country wdt:P31 wd:Q28171280}
-    //       OPTIONAL { ?country wdt:P36 ?capital } .
+    const sparqlQuery = `PREFIX dbp:<http://dbpedia.org/property/>
+        PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
 
-    //       SERVICE wikibase:label { bd:serviceParam wikibase:language "fr" }
-    //     }
-    //     ORDER BY ?countryLabel`
-    //   ;
-
-    //   client.query(query)
-    //     .execute()
-    //     .then((response: { results: { bindings: SetStateAction<null>; }; }) => {
-    //       setData(response.results.bindings);
-    //     });
-    // {data ? data.map((item:any) => (
-    //     <div key={item.country.value}>
-    //       <p>{item.countryLabel.value}</p>
-    //       <p>{item.capitalLabel.value}</p>
-    //     </div>
-    //   )) : 'Loading...'}
-    // }, []);
-
-    const endpointUrl = 'https://query.wikidata.org/sparql';
-
-const sparqlQuery = `SELECT ?country ?countryLabel ?population ?capital ?capitalLabel ?officialLanguage ?officialLanguageLabel ?president ?presidentLabel ?currency ?currencyLabel
-WHERE 
-{
-  ?country wdt:P31 wd:Q3624078.
-  ?country rdfs:label ?countryLabel.
-  ?country wdt:P1082 ?population.
-  ?country wdt:P36 ?capital.
-  ?capital rdfs:label ?capitalLabel.
-  ?country wdt:P37 ?officialLanguage.
-  ?officialLanguage rdfs:label ?officialLanguageLabel.
-  ?country wdt:P6 ?president.
-  ?president rdfs:label ?presidentLabel.
-  ?country wdt:P38 ?currency.
-  ?currency rdfs:label ?currencyLabel.
-  FILTER (lang(?countryLabel) = "en")
-  FILTER (lang(?officialLanguageLabel) = "en")
-  FILTER (lang(?capitalLabel) = "en")
-  FILTER (lang(?presidentLabel) = "en")
-  FILTER (lang(?currencyLabel) = "en")
-}`;
+        SELECT ?plant ?nom ?Calcium ?Carbone ?Matiere_grasse ?Fibres ?Folate ?Fer ?Calories
+        WHERE {
+        ?plant a <http://dbpedia.org/ontology/Plant> .
+        ?plant rdfs:label ?nom .
+        ?plant dbp:calciumMg ?Calcium .
+        ?plant dbp:carbs ?Carbone .
+        ?plant dbp:fat ?Matiere_grasse .
+        ?plant dbp:fiber ?Fibres .
+        ?plant dbp:folateUg ?Folate .
+        ?plant dbp:ironMg ?Fer .
+        ?plant dbp:kj ?Calories .
+        FILTER (lang(?nom) = "fr")
+        } `;
 
     const [data, setData] = useState();
 
-    async function requete () {
-      const fullUrl = endpointUrl + '?query=' + encodeURIComponent( sparqlQuery );
-      const headers = { 'Accept': 'application/sparql-results+json' };
-      const response = await fetch(fullUrl, { headers });
-      const data_aw = await response.json();
-      //var tab = dictionnaire(data_aw)   
-      //setData(tab);    
-      setData(data_aw);   
-      console.log('data_aw :>> ', data_aw); 
-   
+    async function searchPlant() {
+        const fullUrl = endpointUrl + '?query=' + encodeURIComponent(sparqlQuery);
+        const headers = { 'Accept': 'application/sparql-results+json' };
+        const response = await fetch(fullUrl, { headers });
+        const data_aw = await response.json();
+
+        //setData(data_aw);
+        //console.log('data_aw :>> ', data_aw);
+
     }
-    
-    useEffect(() => {   
-      requete()
-      }  
-  , []);
+
+    useEffect(() => {
+        searchPlant()
+    }
+        , []);
 
     return (
         <div className='text-center'>
@@ -136,19 +96,38 @@ WHERE
                         <div className='container'>
                             <div className="row">
                                 <div className='col-sm-6 col-12'>
-                                    <h3>{ingredient?.ingredientName}</h3>
-                                    <p>
-                                        {ingredient.description}
-                                    </p>
+                                    <div className='bg-light p-2'>
 
+                                        <h3>{ingredient?.ingredientName}</h3>
+                                        <p>
+                                            {ingredient.description}
+                                        </p>
+                                        <div className=''>
+                                            {ingredient.Image &&
+                                                <div className=''>
+                                                    <img className='border rounded shadow' src={ingredient.Image} alt="ingredient" />
+                                                </div>
+                                            }
+                                            <div className='mt-4'>
+                                                <p>Calcium : {ingredient.Calcium}</p>
+                                                <p>MatiereGrasse : {ingredient.MatiereGrasse}</p>
+                                                <p>Carbone : {ingredient.Carbone}</p>
+                                                <p>Fibres : {ingredient.Fibres}</p>
+                                                <p>Folate : {ingredient.Folate}</p>
+                                                <p>Fer : {ingredient.Fer}</p>
+                                                <p>Calories : {ingredient.Calories}</p>
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className='col-sm-6 col-12  border rounded p-0'>
-                                    <div className='border pt-1'><p>Recette</p></div>
-                                {recipes.map((recip, pos) =>
-                                        <Link key={"rec"+pos} to={'/recette/' + pos} className='btn btn-white col-12 border-bottom p-3'>
+                                    <div className='border pt-1 bg-light'><p className='font-weight-bold'>Remèdes qui en contient </p></div>
+                                    {remedys.map((recip, pos) =>
+                                        <Link key={"rec" + pos} to={'/remede/' + pos} className='btn bg-element-list col-12 border-bottom p-3'>
                                             <div>
-                                                <div>{recip.recipeName}</div>
+                                                <div>{recip.remedyName}</div>
                                                 <div>{recip.description}</div>
                                             </div>
 
@@ -163,7 +142,7 @@ WHERE
                     }
                 </div> :
 
-                <p>Vous pouvez rechercher un ingrédient, une recette de guérison ou une maladie</p>
+                <p>Vous pouvez rechercher un ingrédient, une remede de guérison ou une maladie</p>
 
             }
         </div>
