@@ -79,17 +79,22 @@ function SicknessDetailScreen(props: any) {
                                     </div>
                                 </div>
 
-                                <div className='col-sm-6 col-12  border rounded p-0'>
-                                    <div className='border pt-1 bg-light'><p className='font-weight-bold'>Remèdes qui le soigne</p></div>
-                                    {remedies.map((remedy, pos) =>
-                                        <Link key={"rec" + pos} to={'/remede/' + pos} className='btn bg-element-list col-12 border-bottom p-3'>
-                                            <div>
-                                                <div>{remedy.remedyName}</div>
-                                                <div>{remedy.description}</div>
-                                            </div>
+                                <div className='col-sm-6 col-12  border rounded p-0 h-100'>
+                                    <div className='border pt-1 bg-light'>
+                                        <p className='font-weight-bold'>Remèdes qui le soigne</p>
+                                    </div>
+                                    <div className='results-list'>
 
-                                        </Link>
-                                    )}
+                                        {remedies.map((remedy, pos) =>
+                                            <Link key={"rec" + pos} to={'/remede/' + pos} className='btn bg-element-list col-12 border-bottom p-3'>
+                                                <div>
+                                                    <div>{remedy.remedyName}</div>
+                                                    <div>{remedy.description}</div>
+                                                </div>
+
+                                            </Link>
+                                        )}
+                                    </div>
                                 </div >
 
                             </div>

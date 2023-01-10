@@ -94,3 +94,13 @@
   background: #ececec;
   cursor: pointer ;
 }
+
+.results-list {
+  width: 100%;
+  max-height: 50vh;
+  padding: 0px;
+  z-index: 100;
+  overflow-y: auto;
+  overflow-X: hidden;
+  //box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}

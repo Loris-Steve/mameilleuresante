@@ -81,20 +81,21 @@ function RemedyDetailScreen(props: any) {
 
                 <div className='col-sm-6 col-12  border rounded p-0'>
                   <div className='d-flex'>
-                    <button className={'col-6 ' + (tabs !== 1 ? "btn btn-light border-right border-bottom" : "btn")}
-                      onClick={() => setTabs(1)}
-                    >
-                      Maladie
-                    </button>
 
-                    <button className={'col-6 ' + (tabs !== 2 ? "btn btn-light border-left border-bottom" : "btn")}
-                      onClick={() => setTabs(2)}
+                    <button className={'col-6 ' + (tabs !== 1 ? "btn btn-light border-left border-bottom" : "btn")}
+                      onClick={() => setTabs(1)}
                     >
                       Ingredient
                     </button>
+
+                    <button className={'col-6 ' + (tabs !== 2 ? "btn btn-light border-right border-bottom" : "btn")}
+                      onClick={() => setTabs(2)}
+                    >
+                      Maladie
+                    </button>
                   </div>
 
-                  <div className=''>
+                  <div className='results-list'>
                     {tabs === 1 ?
                       remedy.sickness.map((ing, pos) =>
                         <Link key={"sick" + pos} to={'/maladie/' + pos} className='btn bg-element-list col-12 border-bottom p-3'>

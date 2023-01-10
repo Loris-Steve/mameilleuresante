@@ -46,38 +46,38 @@ function IngredientDetailScreen(props: any) {
         }
     }, [params])
 
-/*     const endpointUrl = 'https://dbpedia.org/sparql';
-
-    const sparqlQuery = `PREFIX dbp:<http://dbpedia.org/property/>
-        PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
-
-        SELECT ?plant ?nom ?Calcium ?Carbone ?Matiere_grasse ?Fibres ?Folate ?Fer ?Calories
-        WHERE {
-        ?plant a <http://dbpedia.org/ontology/Plant> .
-        ?plant rdfs:label ?nom .
-        ?plant dbp:calciumMg ?Calcium .
-        ?plant dbp:carbs ?Carbone .
-        ?plant dbp:fat ?Matiere_grasse .
-        ?plant dbp:fiber ?Fibres .
-        ?plant dbp:folateUg ?Folate .
-        ?plant dbp:ironMg ?Fer .
-        ?plant dbp:kj ?Calories .
-        FILTER (lang(?nom) = "fr")
-        } `;
-
-    const [data, setData] = useState();
-
-    async function searchPlant() {
-        const fullUrl = endpointUrl + '?query=' + encodeURIComponent(sparqlQuery);
-        const headers = { 'Accept': 'application/sparql-results+json' };
-        const response = await fetch(fullUrl, { headers });
-        const data_aw = await response.json();
-
-        //setData(data_aw);
-        //console.log('data_aw :>> ', data_aw);
-
-    }
- */
+    /*     const endpointUrl = 'https://dbpedia.org/sparql';
+    
+        const sparqlQuery = `PREFIX dbp:<http://dbpedia.org/property/>
+            PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+    
+            SELECT ?plant ?nom ?Calcium ?Carbone ?Matiere_grasse ?Fibres ?Folate ?Fer ?Calories
+            WHERE {
+            ?plant a <http://dbpedia.org/ontology/Plant> .
+            ?plant rdfs:label ?nom .
+            ?plant dbp:calciumMg ?Calcium .
+            ?plant dbp:carbs ?Carbone .
+            ?plant dbp:fat ?Matiere_grasse .
+            ?plant dbp:fiber ?Fibres .
+            ?plant dbp:folateUg ?Folate .
+            ?plant dbp:ironMg ?Fer .
+            ?plant dbp:kj ?Calories .
+            FILTER (lang(?nom) = "fr")
+            } `;
+    
+        const [data, setData] = useState();
+    
+        async function searchPlant() {
+            const fullUrl = endpointUrl + '?query=' + encodeURIComponent(sparqlQuery);
+            const headers = { 'Accept': 'application/sparql-results+json' };
+            const response = await fetch(fullUrl, { headers });
+            const data_aw = await response.json();
+    
+            //setData(data_aw);
+            //console.log('data_aw :>> ', data_aw);
+    
+        }
+     */
 
     return (
         <div className='text-center'>
@@ -120,15 +120,18 @@ function IngredientDetailScreen(props: any) {
 
                                 <div className='col-sm-6 col-12  border rounded p-0'>
                                     <div className='border pt-1 bg-light'><p className='font-weight-bold'>Remèdes qui en contient </p></div>
-                                    {remedys.map((recip, pos) =>
-                                        <Link key={"rec" + pos} to={'/remede/' + pos} className='btn bg-element-list col-12 border-bottom p-3'>
-                                            <div>
-                                                <div>{recip.remedyName}</div>
-                                                <div>{recip.description}</div>
-                                            </div>
+                                    <div className='results-list'>
 
-                                        </Link>
-                                    )}
+                                        {remedys.map((recip, pos) =>
+                                            <Link key={"rec" + pos} to={'/remede/' + pos} className='btn bg-element-list col-12 border-bottom p-3'>
+                                                <div>
+                                                    <div>{recip.remedyName}</div>
+                                                    <div>{recip.description}</div>
+                                                </div>
+
+                                            </Link>
+                                        )}
+                                    </div>
                                 </div >
 
                             </div>
